@@ -26,7 +26,7 @@ namespace Part1_ProceduralToOOP
 
         public double CalculateTotal()
         {
-                        return (double)Product.Price * Quantity;
+            return (double)Product.Price * Quantity;
         }
 
     }
