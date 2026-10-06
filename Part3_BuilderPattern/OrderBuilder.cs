@@ -8,14 +8,6 @@ namespace Part3_BuilderPattern;
 
 public class OrderBuilder
 {
-    private int _invoiceId;
-    private string? _customerName;
-    private string? _customerEmail;
-    private string? _customerPhone;
-
-    private Address? _billingAddress;
-    private Address? _shippingAddress;
-
     private DateTime _orderDate;
     private string? _paymentMethod;
     private string? _currency;
@@ -23,114 +15,78 @@ public class OrderBuilder
     private decimal _subTotal;
     private decimal _discountAmount;
     private decimal _taxAmount;
+    private decimal _totalAmount;
 
-    public OrderBuilder WithInvoiceId(int id)
+    public OrderBuilder WithOrderDate(DateTime value)
     {
-        _invoiceId = id;
+        _orderDate = value;
         return this;
     }
 
-    public OrderBuilder WithCustomer(
-        string name,
-        string email,
-        string phone)
+    public OrderBuilder WithPaymentMethod(string value)
     {
-        _customerName = name;
-        _customerEmail = email;
-        _customerPhone = phone;
+        _paymentMethod = value;
         return this;
     }
 
-    public OrderBuilder WithBillingAddress(Address address)
+    public OrderBuilder WithCurrency(string value)
     {
-        _billingAddress = address;
+        _currency = value;
         return this;
     }
 
-    public OrderBuilder WithShippingAddress(Address address)
+    public OrderBuilder WithSubTotal(decimal value)
     {
-        _shippingAddress = address;
+        _subTotal = value;
         return this;
     }
 
-    public OrderBuilder WithOrderDate(DateTime date)
+    public OrderBuilder WithDiscountAmount(decimal value)
     {
-        _orderDate = date;
+        _discountAmount = value;
         return this;
     }
 
-    public OrderBuilder WithPaymentMethod(string method)
+    public OrderBuilder WithTaxAmount(decimal value)
     {
-        _paymentMethod = method;
+        _taxAmount = value;
         return this;
     }
 
-    public OrderBuilder WithCurrency(string currency)
+    public OrderBuilder WithTotalAmount(decimal value)
     {
-        _currency = currency;
+        _totalAmount = value;
         return this;
     }
 
-    public OrderBuilder WithSubTotal(decimal amount)
+    public Order Build()
     {
-        _subTotal = amount;
-        return this;
-    }
-
-    public OrderBuilder WithDiscount(decimal amount)
-    {
-        _discountAmount = amount;
-        return this;
-    }
-
-    public OrderBuilder WithTax(decimal amount)
-    {
-        _taxAmount = amount;
-        return this;
-    }
-
-    public Invoice Build()
-    {
-        if (_invoiceId <= 0)
-            throw new InvalidOperationException("Invoice ID is required.");
-
-        if (string.IsNullOrWhiteSpace(_customerName))
-            throw new InvalidOperationException("Customer name is required.");
-
-        if (string.IsNullOrWhiteSpace(_customerEmail))
-            throw new InvalidOperationException("Customer email is required.");
-
-        if (_billingAddress == null)
-            throw new InvalidOperationException("Billing address is required.");
-
-        if (_shippingAddress == null)
-            throw new InvalidOperationException("Shipping address is required.");
-
-        if (string.IsNullOrWhiteSpace(_paymentMethod))
-            throw new InvalidOperationException("Payment method is required.");
+        if (_orderDate == default)
+            throw new InvalidOperationException("OrderDate is required.");
 
         if (string.IsNullOrWhiteSpace(_currency))
             throw new InvalidOperationException("Currency is required.");
 
-        decimal total =
-            _subTotal
-            - _discountAmount
-            + _taxAmount;
+        if (_subTotal < 0)
+            throw new InvalidOperationException("SubTotal cannot be negative.");
 
-        return new Invoice(
-            _invoiceId,
-            _customerName,
-            _customerEmail!,
-            _customerPhone ?? "",
-            _billingAddress,
-            _shippingAddress,
+        if (_discountAmount < 0)
+            throw new InvalidOperationException("DiscountAmount cannot be negative.");
+
+        if (_taxAmount < 0)
+            throw new InvalidOperationException("TaxAmount cannot be negative.");
+
+        if (_totalAmount < 0)
+            throw new InvalidOperationException("TotalAmount cannot be negative.");
+
+        return new Order(
             _orderDate,
-            _paymentMethod!,
-            _currency!,
+            _paymentMethod ?? "",
+            _currency,
             _subTotal,
             _discountAmount,
             _taxAmount,
-            total
+            _totalAmount
         );
     }
 }
